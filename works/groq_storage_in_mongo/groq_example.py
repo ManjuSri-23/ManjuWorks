@@ -20,7 +20,7 @@ chat_completion = client.chat.completions.create(
 
 result={"string":chat_completion.choices[0].message.content}
 
-client=MongoClient('mongodb+srv://manjusri2306:thakalimanju@cluster0.alpj0mm.mongodb.net/')
+client=MongoClient('mongodb+srv://manjusri2306:limanju@cluster0.alpj0mm.mongodb.net/')
 db=client['database']
 collection=db['groq']
 inserted_doc=collection.insert_one(result)

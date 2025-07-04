@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-client=MongoClient('mongodb+srv://manjusri2306:thakalimanju@cluster0.alpj0mm.mongodb.net/')
+client=MongoClient('mongodb+srv://manjusri2306:limanju@cluster0.alpj0mm.mongodb.net/')
 db=client['mydatabase']
 collection=db['mycollection']
 document={'name':'manju','city':'banglore'}

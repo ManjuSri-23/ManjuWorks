@@ -1,30 +1,30 @@
-# from pydantic import BaseModel
-# from datetime import date
-# import re
-# import google.generativeai as genai
-# from PIL import Image
+from pydantic import BaseModel
+from datetime import date
+import re
+import google.generativeai as genai
+from PIL import Image
 
-# class User(BaseModel):
-#     name:str
-#     dob:str
-#     gender:str
+class User(BaseModel):
+    name:str
+    dob:str
+    gender:str
 
 
-# img=Image.open(r"C:\Users\MANJUSREE\OneDrive\Pictures\Screenshots\Screenshot 2025-06-13 114110.png")
-# genai.configure(api_key="AIzaSyAYjDDkAN9CmQKitUBhtfIrg8Amk1C1mMc")
+img=Image.open(r"C:\Users\MANJUSREE\OneDrive\Pictures\Screenshots\Screenshot 2025-06-13 114110.png")
+genai.configure(api_key="AIzaSyAYjDDkAN9CmQKitUBhtfIrg8Amk1C1mMc")
 
-# model=genai.GenerativeModel(model_name="gemini-2.0-flash",generation_config={
-#     'response_mime_type':"application/json",
-#     'response_schema':User
-# })
-# prompt='''
-# from the image extract the  information  such as name of the candidate , date of birth  , gender and return all the three in format specified.
+model=genai.GenerativeModel(model_name="gemini-2.0-flash",generation_config={
+    'response_mime_type':"application/json",
+    'response_schema':User
+})
+prompt='''
+from the image extract the  information  such as name of the candidate , date of birth  , gender and return all the three in format specified.
  
-# '''
+'''
 
-# response=model.generate_content([img,prompt])
-# result=response.text
-# print(result)
+response=model.generate_content([img,prompt])
+result=response.text
+print(result)
 
 # import google.generativeai as genai
 # from PIL import Image
