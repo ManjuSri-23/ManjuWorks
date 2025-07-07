@@ -13,13 +13,13 @@ import re
 from fuzzywuzzy import fuzz
 
 
-client = MongoClient('mongodb+srv://manjusri2306:Northenlights23@cluster0.alpj0mm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+client = MongoClient("mongodb+srv://manjusri2306:Penquin23@cluster0.alpj0mm.mongodb.net/")
 db = client['medical_devices_final']
 collection = db['usermanual_conversation_images']
 
 
 def get_images_by_text_match(answer, score_threshold=70):
-    client = MongoClient('mongodb+srv://manjusri2306:Northenlights23@cluster0.alpj0mm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+    client = MongoClient("mongodb+srv://manjusri2306:Penquin23@cluster0.alpj0mm.mongodb.net/")
     db = client["medical_devices_final"]
     collection = db["medical_devices_with_images_final"]
 
@@ -75,18 +75,30 @@ def get_images_by_text_match(answer, score_threshold=70):
 
 
     
-    
-def get_relevant_chunks(question, chunks, embeddings, top_k=3):
+def get_relevant_chunks(question, chunks, embeddings, top_k=1, extend_by=3):
     model = SentenceTransformer("thenlper/gte-base")
     question_embedding = model.encode(question)
     cos_scores = util.pytorch_cos_sim(question_embedding, embeddings)[0]
     top_indices = torch.topk(cos_scores, k=top_k).indices.tolist()
 
-    top_chunks = [chunks[i] for i in top_indices]
+    added_indices = set()
+    all_selected_indices = []
+
+    for idx in top_indices:
+        
+        for i in range(idx, min(idx + extend_by + 1, len(chunks))):
+            if i not in added_indices:
+                all_selected_indices.append(i)
+                added_indices.add(i)
+
+    top_chunks = [chunks[i] for i in all_selected_indices]
     return top_chunks
 
+
 def query_gemini(question,top_chunks):
-    context = "\n\n".join(chunk['text'] for chunk in top_chunks)
+    context = "\n\n".join(chunk.page_content for chunk in top_chunks)
+
+    print(context)
 
     
     prompt_template=ChatPromptTemplate.from_template( '''You are a expert in medical devices and a helpful assistant providing answers based on given content
@@ -114,6 +126,7 @@ def query_gemini(question,top_chunks):
                                                                 - "Tell me the steps for adjusting FLAIR images"
                                                                 - "Explain FLAIR image adjustment"
                                                                 - Treat them as the same intent and provide complete answers.
+                                                        12.If the content has instructions or points like(1.,2.... or bulletin points) gnerate all the points in response.If some points continues in next paragraph in context  ,include those points also in response.
  
                     
                                                      
@@ -124,7 +137,7 @@ def query_gemini(question,top_chunks):
                                                      
                                                      ''')
     llm = ChatGoogleGenerativeAI(
-    api_key="AIzaSyAYjDDkAN9CmQKitUBhtfIrg8Amk1C1mMc",
+    api_key="AIzaSyC2MccWvfnCQNTz3p9jPlGS3sBDcLdEneI",
     model="gemini-2.0-flash")
     
     chain=prompt_template|llm
@@ -166,7 +179,7 @@ def save_to_mongo(question, answer,image):
     collection.insert_one(doc)
 
 def load_from_mongo():
-    client = MongoClient('mongodb+srv://manjusri2306:Northenlights23@cluster0.alpj0mm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+    client = MongoClient("mongodb+srv://manjusri2306:Penquin23@cluster0.alpj0mm.mongodb.net/")
     db = client['medical_devices_final']
     collection = db['medical_devices_with_images_final']
     data = list(collection.find())
